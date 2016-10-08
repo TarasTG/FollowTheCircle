@@ -22,49 +22,33 @@ height = len(pixels)#height of image
 ###################################################################################
 
 
-
 ###################################################################################
-#3.find indexes of top and bottom of circle in image  
-###################################################################################
-#first row with circle pixels
-firstrowindex = 0
-while not sum(pixels[firstrowindex]):
-    firstrowindex += 1
-
-#last row with circle pixels
-lastrowindex = height - 1 
-while not sum(pixels[lastrowindex]):
-    lastrowindex -= 1
-###################################################################################
-
-
-
-###################################################################################
-#4.calculate result
+#3.calculate result
 ###################################################################################
 result = bytes()#result of circles bytes
-
-for rowindex in range(firstrowindex, lastrowindex):#loop for image rows with circle pixels
+for rowindex in range(len(pixels)):#loop for image rows with circle pixels     
+    
     row = pixels[rowindex]
 
-    #Get bytes from left and right part crescents for row
-    if rowindex == firstrowindex or rowindex == lastrowindex:#for first and last row of circle
-        bytesfromleft = bytes()
-        bytesfromright = row[0:width-1].tobytes().strip(b'\x00')[1::3]
-    else:#from second till pre-last row of circle            
-        bytesfromleft = row[0:width//2].tobytes().strip(b'\x00')[1::3]
-        bytesfromright = row[width//2+3:width].tobytes().strip(b'\x00')[1::3]
+    if not sum(row):#skip row with only black pixels
+        continue
+
+    #Get bytes from left and right part of crescents for row
+    bytesfromleft = row[0:width//2].tobytes().strip(b'\x00')[1::3]
+    bytesfromright = row[width//2:width].tobytes().strip(b'\x00')[1::3]
             
     #join result of left + right parts of crescents
     if rowindex <= (height // 2):#for top part of circle
         result = bytesfromleft + result + bytesfromright            
     elif rowindex > (height // 2):#for lower part of circle        
         result = bytesfromleft[::-1] + result + bytesfromright[::-1]
+
 ###################################################################################
 
 ###################################################################################
-#5.print result
+#4.print result
 ###################################################################################
+
 #print simple text
 print('Simple text: {}'.format(result[result.find(b'Congra'):result.find(b'BZh91AY',result.find(b'Congra'))]))
 
